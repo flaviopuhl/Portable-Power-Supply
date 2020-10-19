@@ -1,0 +1,176 @@
+/*
+
+  The circuit:
+ * LCD RS pin to digital pin 12
+ * LCD Enable pin to digital pin 11
+ * LCD D4 pin to digital pin 5
+ * LCD D5 pin to digital pin 4
+ * LCD D6 pin to digital pin 3
+ * LCD D7 pin to digital pin 2
+ * LCD R/W pin to ground
+ * LCD VSS pin to ground
+ * LCD VCC pin to 5V
+ * 10K resistor:
+ * ends to +5V and ground
+ * wiper to LCD VO pin (pin 3)
+
+ */
+
+// include the library code:
+#include <LiquidCrystal.h>
+
+byte pontavazia[8] = {
+  B11100,
+  B00100,
+  B00110,
+  B00010,
+  B00010,
+  B00110,
+  B00100,
+  B11100,
+};
+
+byte pontacheia[8] = {
+  B11100,
+  B11100,
+  B11110,
+  B11110,
+  B11110,
+  B11110,
+  B11100,
+  B11100,
+};
+
+byte vazia[8] = {
+  B11111,
+  B10001,
+  B10001,
+  B10001,
+  B10001,
+  B10001,
+  B10001,
+  B11111,
+};
+
+byte cheio[8] = {
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+};
+
+int voltagePin = A0;    // Voltage sensor
+int currentPin = A1;    // Current sensor
+int battPin = A2;    	// Battery voltage
+
+int voltageValue = 0; 
+int currentValue = 0;
+int battValue = 0;
+
+float ratio = 0.5;
+
+int b = 0;				// index to position battery indicator
+
+// initialize the library with the numbers of the interface pins
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+
+void setup() {
+  lcd.createChar(0,pontavazia );
+  lcd.createChar(1,pontacheia );
+  lcd.createChar(2,vazia );
+  lcd.createChar(3,cheio );
+	
+  // set up the LCD's number of columns and rows:
+  lcd.begin(16, 3);
+  // Print a message to the LCD.
+  lcd.setCursor(0, 0);
+  lcd.print("PortPowerSupply");
+  lcd.setCursor(1, 1);
+  lcd.print("by flavio_puhl");
+  delay(500);
+  lcd.clear();
+}
+
+void loop() {
+  
+  voltageValue = analogRead(voltagePin);
+  currentValue = analogRead(currentPin);
+  battValue = analogRead(battPin);
+  
+  float voltageValue_V = voltageValue * (5.0 / 1023.0)* ratio;
+  float currentValue_A = (2.5 - (currentValue * (5.0 / 1024.0)) )/0.185;
+  float battValue_V = battValue * (5.0 / 1023.0);
+  float powerValue_W = voltageValue_V*currentValue_A;
+  
+  
+  // set the cursor to column 0, line 1
+  // (note: line 1 is the second row, since counting begins with 0):
+  lcd.setCursor(2, 0);
+  lcd.print(voltageValue_V);
+  lcd.print("V");
+  
+  lcd.setCursor(9, 0);
+  lcd.print(currentValue_A);
+  lcd.print("A");
+  
+  lcd.setCursor(9, 1);
+  lcd.print(powerValue_W);
+  lcd.print("W");
+  
+  
+  
+  if (battValue_V>=3.6){
+    lcd.setCursor(b, 1);
+		lcd.write(byte(3));
+		lcd.write(byte(3));
+		lcd.write(byte(3));
+		lcd.write(byte(3));
+		lcd.write(byte(1));
+  }
+  
+  if (battValue_V<3.6 && battValue_V>=3.4){
+    lcd.setCursor(b, 1);
+		lcd.write(byte(3));
+		lcd.write(byte(3));
+		lcd.write(byte(3));
+		lcd.write(byte(3));
+		lcd.write(byte(0));
+  }
+  
+  if (battValue_V<3.4 && battValue_V>=3.2){
+    lcd.setCursor(b, 1);
+		lcd.write(byte(3));
+		lcd.write(byte(3));
+		lcd.write(byte(3));
+		lcd.write(byte(2));
+		lcd.write(byte(0));
+  }
+  
+  if (battValue_V<3.2 && battValue_V>=3.0){
+    lcd.setCursor(b, 1);
+		lcd.write(byte(3));
+		lcd.write(byte(3));
+		lcd.write(byte(2));
+		lcd.write(byte(2));
+		lcd.write(byte(0));
+  }
+  
+  if (battValue_V<3.0){
+    lcd.setCursor(b, 1);
+		lcd.write(byte(3));
+		lcd.write(byte(2));
+		lcd.write(byte(2));
+		lcd.write(byte(2));
+		lcd.write(byte(0));
+  }
+ 
+   
+  delay(200);
+  lcd.clear();
+  
+}
+ 

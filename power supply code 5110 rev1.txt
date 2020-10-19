@@ -1,0 +1,129 @@
+#include <Arduino.h>
+#include <SPI.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_PCD8544.h>
+
+  // Software SPI (slower updates, more flexible pin options):
+  // pin 3 - Serial clock out (SCLK)
+  // pin 4 - Serial data out (DIN)
+  // pin 5 - Data/Command select (D/C)
+  // pin 7 - LCD chip select (CS)
+  // pin 6 - LCD reset (RST)
+
+  Adafruit_PCD8544 display = Adafruit_PCD8544(3, 4, 5, 7, 6);
+
+int voltagePin = A0;    // Voltage sensor
+int currentPin = A1;    // Current sensor
+int battPin = A2;    	// Battery voltage
+
+int voltageValue = 0; 
+int currentValue = 0;
+int battValue = 0;
+
+float ratio = 0.5;
+
+// initialize the library with the numbers of the interface pins
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+
+static const unsigned char PROGMEM logo16_glcd_bmp[] =
+{ B00000000, B11000000,
+  B00000001, B11000000,
+  B00000001, B11000000,
+  B00000011, B11100000,
+  B11110011, B11100000,
+  B11111110, B11111000,
+  B01111110, B11111111,
+  B00110011, B10011111,
+  B00011111, B11111100,
+  B00001101, B01110000,
+  B00011011, B10100000,
+  B00111111, B11100000,
+  B00111111, B11110000,
+  B01111100, B11110000,
+  B01110000, B01110000,
+  B00000000, B00110000 };
+
+void setup() {
+  Serial.begin(9600);
+
+  display.begin();
+  display.setContrast(50);  // Adjust for your display
+  delay(500);               // Adafruit logo
+	
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(BLACK);
+  display.setCursor(12,1);
+  display.println("Portable Power Supply");
+  display.setCursor(25,15);
+  display.println("beta_1");
+  display.setCursor(10,25);
+  display.println("flavio_puhl");
+  display.display();
+  delay(1500);
+  display.clearDisplay();
+}
+
+void loop() {
+  
+  // DAQ
+  voltageValue = analogRead(voltagePin);
+  currentValue = analogRead(currentPin);
+  battValue = analogRead(battPin);
+  
+  float voltageValue_V = voltageValue * (5.0 / 1023.0)* ratio;
+  float currentValue_A = (2.5 - (currentValue * (5.0 / 1024.0)) )/0.185;
+  float battValue_V = battValue * (5.0 / 1023.0);
+  float powerValue_W = voltageValue_V*currentValue_A;
+  
+  // Display Volts
+  display.setTextSize(1);
+  display.setTextColor(BLACK);
+  display.setCursor(77,17);
+  display.print("V");
+  
+  display.setTextSize(2);
+  display.setTextColor(BLACK);
+  display.setCursor(18,10);
+  display.print(voltageValue_V);
+  
+  //Display Amps
+  display.setTextSize(1);
+  display.setTextColor(BLACK);
+  display.setCursor(77,32);
+  display.print("A");
+
+  display.setTextSize(2);
+  display.setTextColor(BLACK);
+  display.setCursor(18,25);
+  display.print(currentValue_A);
+  
+  
+  //Display batt charge
+  if (battValue_V>=3.6){
+    
+  }
+  
+  if (battValue_V<3.6 && battValue_V>=3.4){
+    
+  }
+  
+  if (battValue_V<3.4 && battValue_V>=3.2){
+    
+  }
+  
+  if (battValue_V<3.2 && battValue_V>=3.0){
+    
+  }
+  
+  if (battValue_V<3.0){
+    
+  }
+ 
+   
+  display.display();  
+  delay(t);
+  display.clearDisplay();
+  
+}
+ 
