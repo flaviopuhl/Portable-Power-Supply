@@ -25,23 +25,41 @@ float ratio = 0.5;
 // initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
-static const unsigned char PROGMEM logo16_glcd_bmp[] =
-{ B00000000, B11000000,
-  B00000001, B11000000,
-  B00000001, B11000000,
-  B00000011, B11100000,
-  B11110011, B11100000,
-  B11111110, B11111000,
-  B01111110, B11111111,
-  B00110011, B10011111,
-  B00011111, B11111100,
-  B00001101, B01110000,
-  B00011011, B10100000,
-  B00111111, B11100000,
-  B00111111, B11110000,
-  B01111100, B11110000,
-  B01110000, B01110000,
-  B00000000, B00110000 };
+static const unsigned char PROGMEM p000[] =
+{ B00000000, B00000000,
+  B00001111, B11110000,
+  B00001000, B00010000,
+  B01111000, B00011110,
+  B01000000, B00000010,
+  B01000000, B00000010,
+  B01000000, B00000010,
+  B01000000, B00000010,
+  B01000000, B00000010,
+  B01000000, B00000010,
+  B01000000, B00000010,
+  B01000000, B00000010,
+  B01000000, B00000010,
+  B01000000, B00000010,
+  B01111111, B11111110,
+  B00000000, B00000000 };
+  
+  static const unsigned char PROGMEM p025[] =
+{ B00000000, B00000000,
+  B00001111, B11110000,
+  B00001000, B00010000,
+  B01111000, B00011110,
+  B01000000, B00000010,
+  B01000000, B00000010,
+  B01000000, B00000010,
+  B01000000, B00000010,
+  B01000000, B00000010,
+  B01000000, B00000010,
+  B01000000, B00000010,
+  B01011111, B11111010,
+  B01011111, B11111010,
+  B01000000, B00000010,
+  B01111111, B11111110,
+  B00000000, B00000000 };
 
 void setup() {
   Serial.begin(9600);
@@ -100,24 +118,24 @@ void loop() {
   
   
   //Display batt charge
-  if (battValue_V>=3.6){
+  if (battValue_V>=3.6){  //p100
     
   }
   
-  if (battValue_V<3.6 && battValue_V>=3.4){
+  if (battValue_V<3.6 && battValue_V>=3.4){ // p075
     
   }
   
-  if (battValue_V<3.4 && battValue_V>=3.2){
+  if (battValue_V<3.4 && battValue_V>=3.2){  //p050
     
   }
   
-  if (battValue_V<3.2 && battValue_V>=3.0){
+  if (battValue_V<3.2 && battValue_V>=3.0){  //p025
     
   }
   
-  if (battValue_V<3.0){
-    
+  if (battValue_V<3.0){   //p000
+    display.drawBitmap(0, 0,  p000, 10, 10, WHITE);
   }
  
    
